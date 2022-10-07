@@ -1,0 +1,30 @@
+\documentclass[11pt]{article}
+\usepackage{preamble}
+
+% If using biblatex, specify bib file here
+%\addbibresource{refs.bib}
+
+% Custom macros
+
+\title{Title}
+\author{Bhargav Samineni}
+\affil{Department of Computer Science, New Jersey Institute of Technology, NJ, USA \\ \email{bs567@njit.edu}}
+\date{} 
+
+\begin{document}
+    \maketitle  
+
+    \begin{abstract}
+
+    \end{abstract}
+
+    \section{Introduction}
+    \input{sections/introduction.tex}
+    
+    \newpage
+    % Delete prev .bbl file if switching between biblatex and bibtex
+
+    %\printbibliography     % For biblatex
+    \bibliography{refs}     % For bibtex/natbib
+ 
+\end{document}

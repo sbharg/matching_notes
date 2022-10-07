@@ -1,0 +1,252 @@
+% Required for TeX packages
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{preamble}[custom preamble as a package]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --Paper dimensions-------------
+% A4 vs Letterpaper
+% Default: Letter
+\DeclareOption{a4}{
+  \PassOptionsToPackage{a4paper, margin=2cm}{geometry}
+}
+\DeclareOption{letter}{
+  \PassOptionsToPackage{letterpaper, margin=1in}{geometry}
+}
+
+% --Bib Management---------------
+% Biblatex vs natbib
+% Default: natbib
+\newif\if@biblatex\@biblatexfalse
+\DeclareOption{biblatex}{
+  \@biblatextrue
+}
+
+\ExecuteOptions{letter}
+\ProcessOptions\relax
+
+% --Pdf Packages-----------------
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{microtype}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[english]{babel}
+\RequirePackage{csquotes}
+\DeclareUnicodeCharacter{2212}{-}
+\RequirePackage{comment}
+\RequirePackage[page]{appendix}
+\RequirePackage{authblk}
+\renewcommand*{\Authfont}{\large\normalfont}
+\renewcommand*{\Affilfont}{\normalsize\normalfont}
+
+\RequirePackage{booktabs}
+\RequirePackage{xspace}
+\RequirePackage{enumitem}
+
+\RequirePackage{geometry}
+
+\if@biblatex
+\RequirePackage[backend = biber, doi = false, maxcitenames = 2, maxbibnames = 99, isbn = false, url = false, style = numeric, natbib = true, giveninits= true]{biblatex}
+\else
+\RequirePackage[square,numbers]{natbib}
+\bibliographystyle{plainnat}
+\fi
+
+% --Title and Abstract-----------
+\makeatletter
+\def\@maketitle{%
+  \newpage
+  \null
+  \vskip 1em%
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE\bfseries\@title \par}%
+    \vskip 1.5em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}%
+        \@author
+      \end{tabular}\par}%
+    \vskip 0.5em%
+    {\normalsize \@date}%
+  \end{center}%
+  \par
+  \vskip 1em}
+
+\renewenvironment{abstract}
+  {\small
+    \begin{center}
+    \bfseries \abstractname\vspace{-.5em}\vspace{\z@}
+    \end{center}
+    \list{}{%
+      \setlength{\leftmargin}{1.25cm}% <---------- CHANGE HERE
+      \setlength{\rightmargin}{\leftmargin}%
+    }%
+    \item\relax}
+  {\endlist}
+\makeatother
+
+\AtBeginDocument{\def\keywordname{{\bf Keywords:}}}
+\providecommand{\keywords}[1]{\def\and{{\textperiodcentered} }%
+\par\addvspace\baselineskip
+\noindent\keywordname\enspace\ignorespaces#1}%
+%\RequirePackage{lipsum} 
+
+% --Math Packages----------------
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{mathtools}
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+
+% --Colors + Refs----------------
+\RequirePackage{color}
+\RequirePackage[dvipsnames]{xcolor}
+\definecolor{Red}{rgb}{1,0,0}
+\def\red{\color{Red}}
+\definecolor{Blue}{rgb}{0,0,1}
+\def\blue{\color{Blue}}
+\definecolor{linkcolor}{rgb}{0, 0.25, 0.75}
+
+\RequirePackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkcolor,
+  citecolor=linkcolor,
+}
+\RequirePackage[nameinlink,capitalize]{cleveref}
+ 
+% --Algorithms-------------------
+\RequirePackage{algorithm}
+\RequirePackage[endLComment=]{algpseudocodex}
+%\RequirePackage[commentColor=linkcolor]{algpseudocodex}
+
+% --Tikz + Graphics--------------
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+\RequirePackage{graphicx}
+\RequirePackage[labelfont=bf]{caption}
+\RequirePackage{subcaption}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom commands -- Some math symbols and math shortcuts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% --Shortcuts for left/right-----
+\newcommand{\lrp}[1]{\left( #1 \right)}
+\newcommand{\lrb}[1]{\left[ #1 \right]}
+\newcommand{\lrc}[1]{\left\{ #1 \right\}}
+\newcommand{\lrv}[1]{\left\langle #1 \right\rangle}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\ceil}[1]{{\lceil {#1} \rceil}}
+\newcommand{\floor}[1]{{\lfloor {#1} \rfloor}}
+
+% --Commonly-used sets-----------
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
+\newcommand{\C}{\ensuremath{\mathbb{C}}}
+\newcommand{\powerset}{\ensuremath{\mathcal{P}}}
+
+% --Probability------------------
+\newcommand{\EX}[1]{\ensuremath{\mathbb{E}\! \lrb{#1}}}
+\newcommand{\PR}[1]{\ensuremath{\mathrm{Pr}\! \lrb{#1}}}
+
+% --Complexity-------------------
+\newcommand{\NP}{\textsf{NP}}
+\newcommand{\NPH}{\textsf{NP-Hard}}
+\newcommand{\NPC}{\textsf{NP-Complete}}
+\newcommand{\ksum}{\ensuremath{k\mathsf{-Sum}}}
+\newcommand{\eqcarpart}{\textsf{Equal Cardinality Partition}}
+\newcommand{\knapsack}{\textsf{Knapsack}}
+\newcommand{\subsetsum}{\textsf{Subset Sum}}
+
+\newcommand{\bigo}[1]{\ensuremath{\operatorname{\mathcal{O}}\!\lrp{#1}}}
+\newcommand{\bigomega}[1]{\ensuremath{\Omega\!\lrp{#1}}}
+\newcommand{\polyreduce}{\ensuremath{\leq_p}}
+
+% --More sets--------------------
+\newcommand{\nonneg}[1]{{\left[ {#1} \right]^+}}
+\def\sse{\subseteq}
+\def\sm{\setminus}
+\def\xbar{\bar{x}}
+\def\calZ{\mathcal{Z}}
+\def\calH{\mathcal{H}}
+\def\calV{\mathcal{V}}
+\def\calE{\mathcal{E}}
+\def\calQ{\mathcal{Q}}
+\def\calM{\mathcal{M}}
+\def\calN{\mathcal{N}}
+\def\calG{\mathcal{G}}
+\def\calR{\mathcal{R}}
+\def\calJ{\mathcal{J}}
+\def\calL{\mathcal{L}}
+\def\calP{\mathcal{P}}
+\def\calB{\mathcal{B}}
+\def\calA{\mathcal{A}}
+\def\calC{\mathcal{C}}
+\def\calX{\mathcal{X}}
+\def\calY{\mathcal{Y}}
+ 
+% --Algorithms-------------------
+\newcommand{\Algin}{\Statex \textbf{Input:} }
+\newcommand{\Algout}{\Statex \textbf{Output:} }
+\newcommand{\Algreq}{\Statex \textbf{Require:} }
+
+% --Misc-------------------------
+% Usage: \tempnote{author}{note}
+\newcommand{\tempnote}[2]{$\ll${\bf #1: }{\it #2}$\gg${\marginpar{\tiny{{\bf#1}}}}}
+% Usage: \newedit[Optional Tag on Margin]{Comment}
+\newcommand{\newedit}[2][]{\textcolor{OrangeRed}{#2}{\marginpar{\tiny{{\bf \textcolor{OrangeRed}{#1}}}}}}
+\newcommand{\TODO}[1]{\textcolor{OrangeRed}{{\bf TODO:} #1}}
+\newcommand{\NOTE}[1]{\textcolor{OrangeRed}{{\bf NOTE:}} #1}
+\newcommand{\cc}{\textcolor{red}{\bf [citation(s)]}}
+\newcommand{\email}[1]{\texttt{#1}}
+\newcommand{\func}[2]{\ensuremath{#1 \! \lrp{#2}}}
+
+% --Theorem Styling--------------
+\newcommand{\qedsym}{\hfill$\blacksquare$}
+
+\declaretheoremstyle[
+  spacebelow=\topsep,
+  spaceabove=\topsep,
+  notefont=\normalfont\itshape, notebraces={(}{)},
+  bodyfont=\normalfont
+]{def}
+ 
+\declaretheoremstyle[
+  spacebelow=\topsep,
+  headfont=\itshape,
+  bodyfont=\normalfont,
+  notefont=\itshape, notebraces={}{},
+  qed=\qedsym
+]{proof}
+
+\declaretheorem[style=plain]{theorem, lemma, corollary, claim, conjecture, proposition, observation, remark, problem}
+\declaretheorem[style=def]{definition}
+
+\let\proof\relax
+\declaretheorem[numbered=no, style=proof]{proof}
+\declaretheorem[numbered=no, style=proof, name=Proof Sketch]{proofsketch}
+
+% --Cleverref--------------------
+\crefname{theorem}{Theorem}{Theorems}
+\crefname{corollary}{Corollary}{Corollaries}
+\crefname{lemma}{Lemma}{Lemmas}
+\crefname{claim}{Claim}{Claims}
+\crefname{observation}{Observation}{Observations}
+\crefname{proposition}{Proposition}{Propositions}
+\crefname{conjecture}{Conjecture}{Conjectures}
+\crefname{remark}{Remark}{Remarks}
+\crefname{problem}{Problem}{Problems}
+\crefname{definition}{Def.}{Defs.}
+\crefname{algorithm}{Algorithm}{Algorithms}
+\crefname{figure}{Fig.}{Figs.}
+\crefname{table}{Table}{Tables}
+
+\endinput
