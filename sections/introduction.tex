@@ -1,1 +1,48 @@
-Insert sections/text here
+\section{Introduction}
+
+\subsection{Offline Case}
+\subsubsection{\maxweightbmatch{}}
+\begin{itemize}[label=--]
+    \item \cite{mestre2006greedy} show that a natural Greedy algorithm gives a $\frac{1}{2}$ approximation for a 
+    maximum weighted \bmatch{} in $\bigO{m \log n}$ time. 
+    \begin{itemize}[label=--]
+        \item Also show how to improve the running time to $\bigO{\beta m}$ where $\beta = \max_{v \in V} b_v$
+        \item Also show how to generalize a randomized algorithm for \match{} to get a $\lrp{\frac{2}{3} - \varepsilon}$ 
+        approximation with expected running time $\bigO{\beta m \log \frac{1}{\varepsilon}}$ 
+    \end{itemize}
+    \item \cite{khan2016efficient} develop an algorithm called $b-Suitor$ that gives a $\frac{1}{2}$ approximation in $\bigO{m \Delta \log \beta}$
+    time where $\Delta$ is the largest degree of a vertex in the graph
+    \begin{itemize}[label=--]
+        \item Show that it chooses the same edges as the Greedy algorithm 
+        \item Show how to parallelize the algorithm
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{\mincostbmatch{}}
+\begin{itemize}[label=--]
+    \item \cite{miller1995staged} give a $\bigO{n^2m}$ time algorithm that gives an optimal solution 
+    \begin{itemize}[label=--]
+        \item They allow for arbitrary edge capacities, we are interested in unit edge capacities
+    \end{itemize}
+    \item \cite{dinitz2021learned} give a learning augmented algorithm that returns an optimal solution in $\bigO{mn \norm{y^* - y}_{b,1}}$ time 
+    \begin{itemize}[label=--]
+        \item $y$ is a (not necessarily feasible) dual solution, $y^{\ast}$ is an optimal dual solution, and $\norm{y^* - y}_{b,1} = \sum_{i} b_i \abs{y_i^* -  y_i}$ 
+    \end{itemize}
+\end{itemize}
+
+\subsection{Online Case}
+
+Under the \emph{free disposal model}, \cite{fahrbach2020edge} give a $0.5086$ competitive 
+online algorithm for edge weighted online bipartite matching. This breaks a long-standing open 
+problem of \cite{mehta2013online} of whether the Display Ads problem under the free disposal model admits 
+an algorithm with competitive ratio better than $0.5$ when there are small capacities. 
+
+Under the random arrival model, \cite{kesselheim2013optimal} give a $\frac{1}{e}$ competitive
+online algorithm for edge weighted online bipartite matching using a generalization of the
+online algorithm for the secretary model. 
+
+Possible research topics: Online weighted $b$-matching with variable capacities 
+\begin{itemize}[label=--]
+    \item \cite{ting2015near} looks at this problem when all the LHS nodes have the same $b$ value
+    \item Look at random order model or some iid model instead of adversarial? 
+\end{itemize}

@@ -54,6 +54,7 @@
 \fi
 
 % --Title and Abstract-----------
+  
 \makeatletter
 \def\@maketitle{%
   \newpage
@@ -91,36 +92,35 @@
 \providecommand{\keywords}[1]{\def\and{{\textperiodcentered} }%
 \par\addvspace\baselineskip
 \noindent\keywordname\enspace\ignorespaces#1}%
-%\RequirePackage{lipsum} 
+\RequirePackage{lipsum} 
 
 % --Math Packages----------------
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{mathtools}
 \RequirePackage{amsthm}
+\RequirePackage[c2, nocomma]{optidef}
+\RequirePackage{bm}
 \RequirePackage{thmtools}
 
 % --Colors + Refs----------------
-\RequirePackage{color}
-\RequirePackage[dvipsnames]{xcolor}
-\definecolor{Red}{rgb}{1,0,0}
-\def\red{\color{Red}}
-\definecolor{Blue}{rgb}{0,0,1}
-\def\blue{\color{Blue}}
-\definecolor{linkcolor}{rgb}{0, 0.25, 0.75}
+%\RequirePackage{color}
+\RequirePackage[usenames, dvipsnames]{xcolor}
+\definecolor[named]{LinkColor}{rgb}{0, 0.25, 0.75}
+\RequirePackage[framemethod=TikZ]{mdframed}
 
 \RequirePackage{hyperref}
 \hypersetup{
   colorlinks=true,
-  linkcolor=linkcolor,
-  citecolor=linkcolor,
+  linkcolor= LinkColor,
+  citecolor= LinkColor,
 }
 \RequirePackage[nameinlink,capitalize]{cleveref}
- 
+
 % --Algorithms-------------------
 \RequirePackage{algorithm}
 \RequirePackage[endLComment=]{algpseudocodex}
-%\RequirePackage[commentColor=linkcolor]{algpseudocodex}
+%\RequirePackage[commentColor=LinkColor]{algpseudocodex}
 
 % --Tikz + Graphics--------------
 \RequirePackage{tikz}
@@ -154,8 +154,9 @@
 \newcommand{\powerset}{\ensuremath{\mathcal{P}}}
 
 % --Probability------------------
-\newcommand{\EX}[1]{\ensuremath{\mathbb{E}\! \lrb{#1}}}
-\newcommand{\PR}[1]{\ensuremath{\mathrm{Pr}\! \lrb{#1}}}
+\DeclareMathOperator*{\E}{\mathbb{E}}
+\newcommand{\EX}[1]{\ensuremath{\E \lrb{#1}}}
+\newcommand{\PR}[1]{\ensuremath{\Pr \lrb{#1}}}
 
 % --Complexity-------------------
 \newcommand{\NP}{\textsf{NP}}
@@ -166,9 +167,20 @@
 \newcommand{\knapsack}{\textsf{Knapsack}}
 \newcommand{\subsetsum}{\textsf{Subset Sum}}
 
-\newcommand{\bigo}[1]{\ensuremath{\operatorname{\mathcal{O}}\!\lrp{#1}}}
+\newcommand{\littleO}[2][]{\func{o_{#1}}{#2}}
+\newcommand{\bigO}[2][]{\func{O_{#1}}{#2}}
+\newcommand{\bigOlog}[2][]{\func{\tilde{O_{#1}}}{#2}}
+
 \newcommand{\bigomega}[1]{\ensuremath{\Omega\!\lrp{#1}}}
 \newcommand{\polyreduce}{\ensuremath{\leq_p}}
+
+% --Custom-----------------------
+\newcommand{\f}[2][f]{\ensuremath{#1 \! \lrp{#2}}}
+\newcommand{\func}[2]{\f[#1]{#2}}
+
+\newcommand{\OPT}{\ensuremath{\mathrm{OPT}}}
+\newcommand{\argmin}{\mathop{\mathrm{arg min}}\limits}
+\newcommand{\argmax}{\mathop{\mathrm{arg max}}\limits}
 
 % --More sets--------------------
 \newcommand{\nonneg}[1]{{\left[ {#1} \right]^+}}
@@ -192,6 +204,8 @@
 \def\calC{\mathcal{C}}
 \def\calX{\mathcal{X}}
 \def\calY{\mathcal{Y}}
+\def\calS{\mathcal{S}}
+\def\calT{\mathcal{T}}
  
 % --Algorithms-------------------
 \newcommand{\Algin}{\Statex \textbf{Input:} }
@@ -207,32 +221,124 @@
 \newcommand{\NOTE}[1]{\textcolor{OrangeRed}{{\bf NOTE:}} #1}
 \newcommand{\cc}{\textcolor{red}{\bf [citation(s)]}}
 \newcommand{\email}[1]{\texttt{#1}}
-\newcommand{\func}[2]{\ensuremath{#1 \! \lrp{#2}}}
+\newcommand{\customcite}[1]{\vspace{1em} \noindent \cite{#1} \citeauthor{#1}, \citetitle{#1}, \citeyear{#1}}
 
 % --Theorem Styling--------------
 \newcommand{\qedsym}{\hfill$\blacksquare$}
+\mdfsetup{skipabove=\topsep,skipbelow=\topsep,rightmargin=0em,innerrightmargin=0em}
+
+%\definecolor[named]{ThmColor}{cmyk}{0.58,0.18,0.00,0.42}
+%\definecolor[named]{ProofColor}{cmyk}{0.22,0.13,0.00,0.47}
+%\definecolor[named]{ProbColor}{cmyk}{0.00,0.77,0.87,0.00}
+%\definecolor[named]{DefColor}{cmyk}{0.56,0.00,0.32,0.33}
+\definecolor[named]{ThmColor}{HTML}{4682B4}
+\definecolor[named]{ProofColor}{HTML}{949698}
+\definecolor[named]{ProbColor}{HTML}{F26035}
+\definecolor[named]{DefColor}{HTML}{507D2A}
+\definecolor[named]{ClaimColor}{HTML}{7977B8}
+\definecolor[named]{ExerciseColor}{HTML}{933D41}
 
 \declaretheoremstyle[
-  spacebelow=\topsep,
-  spaceabove=\topsep,
-  notefont=\normalfont\itshape, notebraces={(}{)},
-  bodyfont=\normalfont
+  headfont=\bfseries, 
+  bodyfont=\normalfont,
+  headpunct= ,
+  postheadspace=\newline,
+  postheadhook={\mbox{}\vskip-1.75ex{\color{DefColor}\hrule height 1pt}\vspace{1ex}\noindent},
+  mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=DefColor, backgroundcolor=DefColor!0,
+			nobreak=false
+		}
 ]{def}
- 
+
 \declaretheoremstyle[
-  spacebelow=\topsep,
+	headfont=\bfseries, 
+  bodyfont=\itshape,
+  headpunct= ,
+  notefont=\sffamily,
+  postheadspace=\newline,
+  postheadhook={\mbox{}\vskip-1.75ex{\color{ProbColor}\hrule height 1pt}\vskip1ex\noindent},
+	mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=ProbColor, backgroundcolor=ProbColor!0,
+			nobreak=false,
+		}
+]{problem}
+
+\declaretheoremstyle[
+	headfont=\bfseries, 
+  bodyfont=\itshape,
+  headpunct= ,
+  postheadspace=\newline,
+  postfoothook={\mbox{}\vskip-1.75ex{\hrule height 1pt}\vskip1ex\noindent}
+  %postheadhook={\mbox{}\vskip-1.75ex{\color{ExerciseColor}\hrule height 1pt}\vskip1ex\noindent},
+	%mdframed={
+	%		linewidth=2pt,
+	%		rightline=false, topline=false, bottomline=false,
+	%		linecolor=ExerciseColor, backgroundcolor=ExerciseColor!0,
+	%		nobreak=false,
+  %    skipbelow=0
+	%	}
+]{exercise}
+
+\declaretheoremstyle[
   headfont=\itshape,
   bodyfont=\normalfont,
   notefont=\itshape, notebraces={}{},
-  qed=\qedsym
+  qed=\qedsym,
+  postheadspace=\newline,
+  preheadhook={\vspace{-\topsep}},
+]{solution}
+
+\declaretheoremstyle[
+  bodyfont=\itshape,
+	mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=ThmColor, backgroundcolor=ThmColor!7,
+			nobreak=false,
+      innerrightmargin=10pt,
+		}
+]{thms}
+
+\declaretheoremstyle[
+  bodyfont=\itshape,
+	mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=ClaimColor, backgroundcolor=ClaimColor!7,
+			nobreak=false,
+      innerrightmargin=10pt,
+		}
+]{claims}
+ 
+\declaretheoremstyle[
+  headfont=\itshape,
+  bodyfont=\normalfont,
+  notefont=\itshape, notebraces={}{},
+  qed=\qedsym,
+  preheadhook={\vspace{-\topsep}},
+  mdframed={
+			linewidth=2pt,
+			rightline=false, topline=false, bottomline=false,
+			linecolor=ProofColor, backgroundcolor=ProofColor!0,
+			nobreak=false,
+      %innertopmargin=0em
+		}
 ]{proof}
 
-\declaretheorem[style=plain]{theorem, lemma, corollary, claim, conjecture, proposition, observation, remark, problem}
-\declaretheorem[style=def]{definition}
+\declaretheorem[style=thms, numberwithin=section]{theorem, lemma, corollary}
+\declaretheorem[style=claims, numberwithin=section]{claim, conjecture, proposition, observation, remark}
+\declaretheorem[style=problem, numberwithin=section]{problem}
+\declaretheorem[style=def, numberwithin=section]{definition}
+\declaretheorem[style=exercise, numberwithin=section]{exercise}
 
 \let\proof\relax
 \declaretheorem[numbered=no, style=proof]{proof}
 \declaretheorem[numbered=no, style=proof, name=Proof Sketch]{proofsketch}
+\declaretheorem[numbered=no, style=solution, name=Solution]{solution}
 
 % --Cleverref--------------------
 \crefname{theorem}{Theorem}{Theorems}
@@ -245,6 +351,7 @@
 \crefname{remark}{Remark}{Remarks}
 \crefname{problem}{Problem}{Problems}
 \crefname{definition}{Def.}{Defs.}
+\crefname{exercise}{Exercise}{Exercises}
 \crefname{algorithm}{Algorithm}{Algorithms}
 \crefname{figure}{Fig.}{Figs.}
 \crefname{table}{Table}{Tables}

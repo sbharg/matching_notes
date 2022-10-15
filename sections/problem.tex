@@ -1,0 +1,73 @@
+\section{Prior Work}
+ 
+\newcommand{\ommatch}{\textsf{Online Maximum Matching}}
+\newcommand{\omm}{\textsf{OMM}}
+\newcommand{\ombmatch}{\textsf{Online Maximum} $b$\textsf{-Matching}}
+\newcommand{\ombm}{\textsf{OM} $b$\textsf{-M}}
+\newcommand{\omwmatch}{\textsf{Online Maximum Weight Matching}}
+\newcommand{\omwm}{\textsf{OMWM}}
+\newcommand{\omwbmatch}{\textsf{Online Maximum Weight} $b$-\textsf{Matching}}
+\newcommand{\omwbm}{\textsf{OMW} $b$-\textsf{M}}
+
+\subsection{Unweighted Problems}
+
+\begin{problem}[\ommatch{}]
+    Given an unweighted bipartite graph $G = \lrp{S \cup R, E}$, the server vertices
+    $S$ are known beforehand and the request vertices $R$ and their incident edges 
+    arrive online one by one. When a request $r_i \in R$ arrives, it must either irrevocably be matched to one of its 
+    unmatched neighbors $s_k \in S$ or be unmatched forever. The objective is to maximize the number 
+    of requests matched. 
+\end{problem}
+
+\customcite{karp1990optimal} 
+\begin{enumerate}
+    \item Show that for \ommatch{} \textsf{(\omm{})}, no deterministic algorithm has a competitive ratio better than $\frac{1}{2}$
+    \begin{enumerate}
+        \item \textsc{Greedy} achieves this ratio
+    \end{enumerate}
+    \item Show that a randomized algorithm \textsc{Ranking} achieves a ratio of $1 - \frac{1}{e}$ which is optimal
+    \begin{enumerate}
+        \item \cite{devanur2013randomized} give a simplified Primal-Dual analysis of this algorithm 
+        \item \cite{eden2021economics} give an economics based analysis of this algorithm
+    \end{enumerate}
+\end{enumerate}
+
+\customcite{kalyanasundaram2000optimal} 
+\begin{enumerate}
+    \item Study the \ombmatch{} \textsf{(\ombm{})} problem which is equivalent to \omm{} with the addition that the server vertices now have a capacity $b$ (i.e.\! they can be matched $b$ times)
+    \item Show that no deterministic algorithm has a competitive ratio better than $1 - \frac{1}{\lrp{1 + \frac{1}{b}}^b}$ 
+    \begin{enumerate}
+        \item They give a deterministic algorithm \textsc{Balance} that achieves this ratio
+    \end{enumerate}
+\end{enumerate}
+
+\customcite{albers2021optimal}
+\begin{enumerate}
+    \item Study the \ombm{} problem where each vertex $s \in S$ can have a variable $b_s$ capacity
+    \item Give a deterministic algorithm \textsc{RelativeBalance} with competitive ratio $1 - \frac{1}{\lrp{1 + \frac{1}{b_{\min}}}^{b_{\min}}}$
+    \item Extend the analysis of the original \textsc{Ranking} algorithm to show that it is still $1 - \frac{1}{e}$ competitive 
+\end{enumerate}
+
+\subsection{Weighted Problems}
+
+In the weighted version of \omm{} and its \bmatch{} variants, there exists no algorithm that 
+can achieve a non-trivial competitive ratio (see \cref{sec:weighted_hardness}). This necessitates the need 
+for some kind of additional assumption on the model. 
+
+\customcite{kalyanasundaram1993online}
+\begin{enumerate}
+    \item Study the \omwmatch{} \textsf{(\omwm{})} problem under the assumption that the weights of edges represent distances in some metric space. 
+    \begin{enumerate}
+        \item Denote this problem as \momwmatch{} \textsf{(\momwm{})}
+    \end{enumerate}
+    \item Show that \textsc{Greedy} for \momwm{} gives competitive ratio $\frac{1}{3}$ 
+    \item Show that no deterministic online algorithm can achieve a ratio better than $\frac{1}{3}$ 
+\end{enumerate}
+
+\section{Metric Online Maximum Weight Matching}
+
+\subsection{Hardness without Metric Assumption}
+
+\subsection{The Greedy Algorithm}
+
+\subsection{Extension to Metric Online Maximum Weight $b$-Matching}

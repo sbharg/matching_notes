@@ -3,6 +3,7 @@ main.pdf
 __pycache__/
 .DS_Store
 references/
+.vscode/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
