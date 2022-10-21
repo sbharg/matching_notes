@@ -79,4 +79,57 @@ Possible further directions for \momwm{}:
 
 \subsection{The Greedy Algorithm}
 
-\subsection{Extension to Metric Online Maximum Weight $b$-Matching}
+\newcommand{\greedy}{\hyperref[alg:greedy]{\textsc{Greedy}}}
+
+\begin{algorithm}[!h]
+    \caption{\textsc{Greedy}} \label{alg:greedy}
+    \begin{algorithmic}[1]
+        \AlgIn Offline vertices $S$ and capacities $b_s$ for all $s \in S$
+        \AlgOut A matching $M$
+        \While{a new request $r \in R$ arrives}
+            \State $\f[N]{r} \gets$ the set of neighbors $s \in S$ of $r$ with remaining capacity
+            \If{$\f[N]{r} = \emptyset$}
+                \State leave $r$ unmatched
+            \Else 
+                \State $s_{\max} \gets \argmax_{s \in \f[N]{r}} \f[d]{s, r}$
+                \State $M \gets M \cup \lrc{\lrp{s_{\max}, r}}$, $b_{s_{\max}} \gets b_{s_{\max}} - 1$
+            \EndIf
+        \EndWhile
+        \Return $M$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}
+    \greedy{} is $\frac{1}{3}$ competitive for \momwm{}
+    \label{thm:greedy_momwm}
+\end{theorem}
+\begin{proof}
+    Let $s_i$ be the server the algorithm matches request $r_i$ to. By definition of \textsc{Greedy} it must be that 
+    \begin{equation}
+        \f[d]{s_j, r_i} \leq \f[d]{s_i, r_i} \text{ for all } j > i. 
+        \label{eq:prop1}
+    \end{equation}
+    Let $s_{\pi(i)}$ be the server the optimal solution matches 
+    $r_i$ to. 
+    
+    Define $\f[D]{r_i} = \f[d]{s_{\pi (i)}, r_i} - \f[d]{s_i, r_i}$. 
+    If $i \leq \f[\pi]{i}$ then clearly $\f[D]{r_i} \leq 0$ by \cref{eq:prop1}. If $i > \f[\pi]{i}$ consider that 
+    $\f[d]{s_i, r_{\pi (i)}} \leq \f[d]{s_{\pi (i)}, r_{\pi (i)}}$ again by \cref{eq:prop1}. By the triangle inequality, 
+    \begin{equation}
+        \f[d]{s_{\pi (i)}, s_i} \leq \f[d]{s_{\pi (i)}, r_{\pi (i)}} + \f[d]{s_i, r_{\pi (i)}} \leq 2 \f[d]{s_{\pi (i)}, r_{\pi (i)}}. 
+        \label{eq:prop2}
+    \end{equation}
+    Then 
+    \begin{align*}
+        \f[D]{r_i} = \f[d]{s_{\pi (i)}, r_i} - \f[d]{s_i, r_i} &\leq \f[d]{s_{\pi (i)}, s_i} + \f[d]{s_i, r_i} - \f[d]{s_i, r_i}\\
+        &= \f[d]{s_{\pi (i)}, s_i}\\
+        &\leq 2\f[d]{s_{\pi (i)}, r_{\pi (i)}}. 
+    \end{align*}
+    Therefore, $\f[D]{r_i}$ is upper bounded by $2\f[d]{s_{\pi (i)}, r_{\pi (i)}}$ for all $i$. Hence, 
+    \begin{align*}
+        \sum_{i=1}^{n} \f[D]{r_i} &\leq \sum_{i=1}^{n} 2 \f[d]{s_{\pi (i)}, r_{\pi (i)}}\\
+        \f[w]{M^*} - \f[w]{M} &\leq 2\f[w]{M}\\
+        \f[w]{M^*} &\leq 3\f[w]{M}
+    \end{align*}
+    and \greedy{} is $\frac{1}{3}$ competitive. 
+\end{proof}

@@ -179,8 +179,8 @@
 \newcommand{\func}[2]{\f[#1]{#2}}
 
 \newcommand{\OPT}{\ensuremath{\mathrm{OPT}}}
-\newcommand{\argmin}{\mathop{\mathrm{arg min}}\limits}
-\newcommand{\argmax}{\mathop{\mathrm{arg max}}\limits}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 % --More sets--------------------
 \newcommand{\nonneg}[1]{{\left[ {#1} \right]^+}}
@@ -208,8 +208,8 @@
 \def\calT{\mathcal{T}}
  
 % --Algorithms-------------------
-\newcommand{\Algin}{\Statex \textbf{Input:} }
-\newcommand{\Algout}{\Statex \textbf{Output:} }
+\newcommand{\AlgIn}{\Statex \textbf{Input:} }
+\newcommand{\AlgOut}{\Statex \textbf{Output:} }
 \newcommand{\Algreq}{\Statex \textbf{Require:} }
 
 % --Misc-------------------------
