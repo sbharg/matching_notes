@@ -5,17 +5,15 @@
 \addbibresource{refs.bib}
 
 % Custom macros
-\setlist[enumerate]{noitemsep, label=--}
+%\setlist[enumerate]{noitemsep, label=--}
+\newlist{desclist}{enumerate}{1}
+\setlist[desclist]{noitemsep, label=--}
 
 \newcommand{\bmatch}{$b$\textsf{-Matching}}
-\newcommand{\mincostbmatch}{\textsf{Minimum Cost Perfect} $b$\textsf{-Matching}}
-\newcommand{\maxweightbmatch}{\textsf{Maximum Weight} $b$\textsf{-Matching}}
-\newcommand{\momwmatch}{\textsf{Metric Online Maximum Weight Matching}}
-\newcommand{\momwm}{\textsf{Metric OMWM}}
-\newcommand{\momwbmatch}{\textsf{Metric Online Maximum Weight} $b$\textsf{-Matching}}
-\newcommand{\momwbm}{\textsf{Metric OMW} $b$-\textsf{M}}
+\newcommand{\minpbmatch}{\textsf{Min Weight Perfect} \bmatch{}}
+\newcommand{\minpmatch}{\textsf{Min Weight Perfect Matching}}
 
-\title{Notes on Metric Online Maximum Weighted $b$-Matching}
+\title{Notes on Metric Bipartite Minimum Weight $b$-Factors}
 \author{Bhargav Samineni}
 %\affil{Department of Computer Science, New Jersey Institute of Technology, NJ, USA \\ \email{bs567@njit.edu}}
 \date{} 
@@ -28,7 +26,8 @@
     %\end{abstract}
 
     %\input{sections/introduction.tex}
-    \input{sections/problem.tex}
+    %\input{sections/problem.tex}
+    \input{sections/bfactors.tex}
     
     \newpage
     % Delete prev .bbl file if switching between biblatex and bibtex

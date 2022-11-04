@@ -152,6 +152,8 @@
 \newcommand{\Q}{\ensuremath{\mathbb{Q}}}
 \newcommand{\C}{\ensuremath{\mathbb{C}}}
 \newcommand{\powerset}{\ensuremath{\mathcal{P}}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
 
 % --Probability------------------
 \DeclareMathOperator*{\E}{\mathbb{E}}
@@ -178,12 +180,17 @@
 \newcommand{\f}[2][f]{\ensuremath{#1 \! \lrp{#2}}}
 \newcommand{\func}[2]{\f[#1]{#2}}
 
+% --Graphs-----------------------
+\newcommand{\degree}[2][]{\f[\mathrm{deg}_{#1}]{#2}}
+\newcommand{\cut}[2][]{\f[\delta_{#1}]{#2}}
+
+% --DiscreteOpt------------------
 \newcommand{\OPT}{\ensuremath{\mathrm{OPT}}}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\poly}[1]{\f[\mathrm{poly}]{#1}}
+\newcommand{\polylog}[1]{\f[\mathrm{polylog}]{#1}}
 
 % --More sets--------------------
-\newcommand{\nonneg}[1]{{\left[ {#1} \right]^+}}
+\newcommand{\nonneg}[1]{\lrb{#1}^+}
 \def\sse{\subseteq}
 \def\sm{\setminus}
 \def\xbar{\bar{x}}

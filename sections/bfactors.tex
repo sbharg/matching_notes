@@ -1,0 +1,88 @@
+\newcommand{\sbmatch}{\textsf{Simple} \bmatch{}}
+\newcommand{\bfactor}{$b$-\textsf{Factor}}
+\newcommand{\mbfactor}{\textsf{Metric} \bfactor{}}
+\newcommand{\minbfactor}{\textsf{Min Weight} \bfactor{}}
+\newcommand{\bfactora}{$b$-factor}
+\newcommand{\sbmatcha}{Simple \bmatch{}}
+
+\section{Introduction}
+
+When constructing a $b$-matching, an edge can potentially be included in the matching multiple times. If an edge can be matched at most once, 
+the resulting solution is called a simple $b$-matching. 
+A \bfactora{} is perfect simple $b$-matching in a graph. That is, it is a subset $F \sse E$
+with $\degree[F]{v} = \f[b]{v}$ for each $v \in V$. Hence, a $1$-factor is equivalent to a perfect matching. 
+%The existence of a \bfactora{} in a bipartite graph comes from the following. 
+\begin{theorem}[\cite{schrijver2003combinatorial}]
+    Let $G = \lrp{V, E}$ be a bipartite graph with node capacity function $b \colon V \to \Z_+$. 
+    Then $G$ has a \bfactora{} iff each subset $X \sse V$ spans at least $\f[b]{X} - \frac{1}{2} \f[b]{V}$ edges. 
+    \label{thm:bfactor_existence}
+\end{theorem}
+
+\cref{thm:bfactor_existence} implies that some necessary (but not sufficient) conditions for a bipartite graph to admit a \bfactora{} 
+is that for each vertex $v \in V$, $\f[b]{v} \leq \frac{1}{2}\f[b]{V}$, and for each partition $A, B$ in the bipartition, $\f[b]{A} = \f[b]{B} = \frac{1}{2}\f[b]{V}$.  
+If a bipartite graph admits a \bfactora{} for some capacity function $b$, a natural extension of the \minpmatch{} problem is to ask for a 
+\minbfactor{}. 
+
+\begin{problem}[\minbfactor{}]
+    Let $G = \lrp{V, E}$ be a bipartite graph. Given $b \colon V \to \Z_+$ and $w \colon E \to \Q_+$, 
+    find a minimum weight \bfactora{} of $G$. 
+    \label{prob:minbfactor}
+\end{problem}
+
+The LP-relaxation of the \minbfactor{} problem is
+\begin{mini}
+    {}{\sum_{e \in E} \f[w]{e} \f[x]{e}}{}{\label{lp:primal}}{}
+    \addConstraint{\sum_{e \in \delta(v)} \f[x]{e}}{= \f[b]{v}}{\quad \forall v \in V}
+    \addConstraint{0 \leq \f[x]{e}}{\leq 1}{\quad \forall e \in E}
+\end{mini}
+and its dual is
+\begin{maxi}
+    {}{\sum_{v \in V} \f[b]{v} \f[y]{v} - \sum_{e \in E} \f[z]{e}}{}{\label{lp:dual}}{}
+    \addConstraint{\f[y]{i} + \f[y]{j} - \f[z]{e}}{\leq \f[w]{e}}{\quad \forall e = \lrp{i, j} \in E}
+    \addConstraint{\f[z]{e}}{ \geq 0}{\quad \forall e \in E}. 
+\end{maxi}
+
+%The complementary slackness conditions for these programs can be stated as follows. 
+
+\begin{lemma}[Complementary Slackness]
+    For an edge $e = \lrp{i, j}$, define $\f[y]{e} = \f[y]{i} + \f[y]{j}$. Then, 
+    \begin{enumerate}
+        \item $\f[x]{e} > 0 \rightarrow \f[y]{e} - \f[z]{e} = \f[w]{e} \rightarrow \f[y]{e} \geq \f[w]{e}$
+        \item $\f[z]{e} > 0 \rightarrow \f[x]{e} = 1$. Alternatively, this gives us that $\f[x]{e} < 1 \rightarrow \f[z]{e} = 0 \rightarrow \f[y]{e} \leq \f[w]{e}$
+    \end{enumerate} 
+    \label{lem:comp_slack}
+\end{lemma}
+
+By \cref{lem:comp_slack}, we find that we do not have to maintain the edge dual $z \colon E \to \R_+$ as its 
+optimum value can be given by explicitly by $\f[z]{e} = \max \lrc{\f[y]{e} - \f[w]{e}, 0}$. This is, for some $b$-factor $F$, 
+$z$ can de defined as
+\begin{equation*}
+    \f[z]{e} = 
+    \begin{dcases}
+        \f[y]{e} - \f[w]{e} &\text{ if }  e \in F\\
+        0 &\text{ otherwise }  .
+    \end{dcases}
+\end{equation*}
+
+
+\section{Related Work}
+
+The \minbfactor{} problem is a special case of \minpbmatch{} where edges can have multiplicity at most 1. A closely related problem 
+is $b$-\textsf{Transportation}, which is essentially the fractional version of \minpbmatch{} 
+(i.e.\! the capacity function $b \colon V \to \R_+$ and the matching function $x \colon E \to \R_+$ allow for fractional values).
+
+\customcite{gabow1989faster}
+\begin{desclist}
+    \item In a bipartite graph, a min weight perfect DCS can be found in $\bigO{m \min \lrc{m^{1/2}, n^{2/3}} \log \lrp{nW}}$ time, where $W = \max_{e \in E} \f[w]{e}$. 
+    \item Finding a perfect DCS is equivalent to finding a $b$-factor when $\f[u]{v} = \f[b]{v}, \f[l]{v} = 0$.
+    \item For a complete bipartite graph, $m = \bigO{n^2}$. Hence, the algorithm runs in $\bigO{mn^{2/3}\log \lrp{nW}}$ time 
+\end{desclist}
+
+\customcite{sharathkumar2012transportation}
+\begin{desclist}
+    \item Study the \minpbmatch{} problem in bipartite graphs 
+    \item Given an $\varepsilon$-close approximation to the problem under any non-negative edge cost function $d \colon E \to R_+$. 
+    \item Use this $\varepsilon$-close approximation to get a $\lrp{1-\varepsilon}$ approximation when $d$ is a metric
+    \item Instead of blowing up the graph using the standard reduction from $b$-matching to perfect matching, they maintain a compact representation of the graph such that the total number of vertices are bounded by $4n$
+          where $n$ is the number of vertices in the input graph. 
+\end{desclist}
