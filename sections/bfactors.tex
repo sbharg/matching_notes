@@ -1,31 +1,30 @@
-\newcommand{\sbmatch}{\textsf{Simple} \bmatch{}}
+\newcommand{\bmatch}{$b$\textsf{-Matching}}
+\newcommand{\minpbmatch}{\textsf{Min Weight Perfect} \bmatch{}}
+\newcommand{\minpmatch}{\textsf{Min Weight Perfect Matching}}
 \newcommand{\bfactor}{$b$-\textsf{Factor}}
-\newcommand{\mbfactor}{\textsf{Metric} \bfactor{}}
 \newcommand{\minbfactor}{\textsf{Min Weight} \bfactor{}}
-\newcommand{\bfactora}{$b$-factor}
-\newcommand{\sbmatcha}{Simple \bmatch{}}
 
 \section{Introduction}
 
 When constructing a $b$-matching, an edge can potentially be included in the matching multiple times. If an edge can be matched at most once, 
 the resulting solution is called a simple $b$-matching. 
-A \bfactora{} is perfect simple $b$-matching in a graph. That is, it is a subset $F \sse E$
+A $b$-factor is perfect simple $b$-matching in a graph. That is, it is a subset $F \sse E$
 with $\degree[F]{v} = \f[b]{v}$ for each $v \in V$. Hence, a $1$-factor is equivalent to a perfect matching. 
-%The existence of a \bfactora{} in a bipartite graph comes from the following. 
+%The existence of a $b$-factor in a bipartite graph comes from the following. 
 \begin{theorem}[\cite{schrijver2003combinatorial}]
     Let $G = \lrp{V, E}$ be a bipartite graph with node capacity function $b \colon V \to \Z_+$. 
-    Then $G$ has a \bfactora{} iff each subset $X \sse V$ spans at least $\f[b]{X} - \frac{1}{2} \f[b]{V}$ edges. 
+    Then $G$ has a $b$-factor iff each subset $X \sse V$ spans at least $\f[b]{X} - \frac{1}{2} \f[b]{V}$ edges. 
     \label{thm:bfactor_existence}
 \end{theorem}
 
-\cref{thm:bfactor_existence} implies that some necessary (but not sufficient) conditions for a bipartite graph to admit a \bfactora{} 
+\cref{thm:bfactor_existence} implies that some necessary (but not sufficient) conditions for a bipartite graph to admit a $b$-factor 
 is that for each vertex $v \in V$, $\f[b]{v} \leq \frac{1}{2}\f[b]{V}$, and for each partition $A, B$ in the bipartition, $\f[b]{A} = \f[b]{B} = \frac{1}{2}\f[b]{V}$.  
-If a bipartite graph admits a \bfactora{} for some capacity function $b$, a natural extension of the \minpmatch{} problem is to ask for a 
+If a bipartite graph admits a $b$-factor for some capacity function $b$, a natural extension of the \minpmatch{} problem is to ask for a 
 \minbfactor{}. 
 
 \begin{problem}[\minbfactor{}]
     Let $G = \lrp{V, E}$ be a bipartite graph. Given $b \colon V \to \Z_+$ and $w \colon E \to \Q_+$, 
-    find a minimum weight \bfactora{} of $G$. 
+    find a minimum weight $b$-factor of $G$. 
     \label{prob:minbfactor}
 \end{problem}
 
@@ -54,8 +53,9 @@ and its dual is
 \end{lemma}
 
 By \cref{lem:comp_slack}, we find that we do not have to maintain the edge dual $z \colon E \to \R_+$ as its 
-optimum value can be given by explicitly by $\f[z]{e} = \max \lrc{\f[y]{e} - \f[w]{e}, 0}$. This is, for some $b$-factor $F$, 
-$z$ can de defined as
+optimum value can be given by explicitly by $\f[z]{e} = \max \lrc{\f[y]{e} - \f[w]{e}, 0}$. 
+\begin{comment}
+This is, for some $b$-factor $F$, $z$ can de defined as
 \begin{equation*}
     \f[z]{e} = 
     \begin{dcases}
@@ -63,7 +63,7 @@ $z$ can de defined as
         0 &\text{ otherwise }  .
     \end{dcases}
 \end{equation*}
-
+\end{comment}
 
 \section{Related Work}
 
@@ -86,3 +86,98 @@ is $b$-\textsf{Transportation}, which is essentially the fractional version of \
     \item Instead of blowing up the graph using the standard reduction from $b$-matching to perfect matching, they maintain a compact representation of the graph such that the total number of vertices are bounded by $4n$
           where $n$ is the number of vertices in the input graph. 
 \end{desclist}
+
+\customcite{lahn2019graph}
+\customcite{lahn2022push}
+\begin{desclist}
+    \item Study the $b$-\textsf{Transportation} problem. Do not assume metric spaces
+    \item Both papers give $\varepsilon$-close approximations based on the scaling algorithm
+    \item The second paper gives an analysis/algorithm that allows for parallelization
+\end{desclist}
+
+\customcite{bertsekas1989auction}
+\customcite{bertsekas1993reverse}
+\customcite{khosla2021revisiting}
+\customcite{alfaro2022assignment}
+\begin{desclist}
+    \item Study a different algorithm for weighted perfect matchings called the \textsf{Auction} algorithm 
+    \item Algorithms runs in $\bigO{n^2\frac{W}{e}}$ time and gives an $\OPT + \varepsilon n$ solution
+    \item Benefits: Can be easily parallelized
+    \item \cite{alfaro2022assignment} shows that it often outperforms Hungarian and Scaling even in sequential
+    \item \cite{bertsekas1989auction} show that it can be extended to \minpbmatch{} 
+\end{desclist}
+
+\section{The Auction Algorithm}
+
+Recall that the LP-Relaxation of the \minbfactor{} problem in a bipartite graph $G = \lrp{L \cup R, E}$  is given by
+\begin{mini}
+    {}{\sum_{(i, j) \in E} \f[w]{i, j} \f[x]{i, j}}{}{\label{lp:primal2}}{}
+    \addConstraint{\sum_{j \in N(i)} \f[x]{i, j}}{= \f[b]{i}}{\quad \forall i \in L}
+    \addConstraint{\sum_{i \in N(j)} \f[x]{i, j}}{= \f[b]{j}}{\quad \forall j \in R}
+    \addConstraint{0 \leq \f[x]{i, j}}{\leq 1}{\quad \forall \lrp{i,j} \in E}
+\end{mini}
+and its dual by
+\begin{maxi}
+    {}{\sum_{i \in L} \f[b]{i} \f[r]{i} + \sum_{j \in R} \f[b]{j} \f[p]{j} - \sum_{(i,j) \in E} \f[z]{i, j}}{}{\label{lp:dual2}}{}
+    \addConstraint{\f[r]{i} + \f[p]{j} - \f[z]{i, j}}{\leq \f[w]{i, j}}{\quad \forall \lrp{i, j} \in E}
+    \addConstraint{\f[z]{i, j}}{ \geq 0}{\quad \forall \lrp{i,j} \in E}. 
+\end{maxi}
+
+By complementary slackness conditions (\cref{lem:comp_slack}), we find that we do not have to maintain the edge duals $z$
+as their optimal value can be given explicitly by $\f[z]{i, j} = \max \lrc{\f[r]{i} + \f[p]{j} - \f[w]{i, j}, 0}$.
+This further implies that for all $\lrp{i, j} \in E$, $\f[r]{i} + \f[p]{j} \leq \f[w]{i, j}$. To condense notation, we define $\f[w^\prime]{i, j} = \f[w]{i, j} - \f[p]{j}$ as the reduced cost 
+of item $j$ for person $i$. This gives us that the dual can be equivalently described by 
+\begin{maxi}
+    {}{\sum_{i \in L} \f[b]{i} \f[r]{i} + \sum_{j \in R} \f[b]{j} \f[p]{j} - \sum_{(i,j) \in E} \max \lrc{\f[r]{i} - \f[w^\prime]{i, j}, 0}}{}{\label{lp:dual2alt}}{}
+    \addConstraint{\f[r]{i} + \f[p]{j}}{\leq \f[w]{i, j}}{\quad \forall \lrp{i, j} \in E}
+\end{maxi}
+
+If we are given a price function $p$, then the objective value of \cref{lp:dual2alt} is maximized when $\f[r]{i} = \min_{k \in N(i)} \f[w]{i, k} - \f[p]{k}$ while still
+respecting the constraints of the problem. Since the edge duals $z$ depend on $r$, they can be given explicitly by $\f[z]{i, j} = \max \lrc{\min_{k \in N(i)}\f[w^\prime]{i, k} - \f[w^\prime]{i, j}, 0}$. 
+However, since clearly $\f[w^\prime]{i, k} \leq \f[w^\prime]{i, j}$, the edge duals are given by $\f[z]{i, j} = 0$. 
+Hence, the dual problem can be further equivalently restated as 
+\begin{maxi}
+    {p}{\sum_{j \in R} \f[b]{j} \f[p]{j} + \sum_{i \in L} \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}}{}{\label{lp:dual_price}}{}
+\end{maxi}
+
+\subsection{$\varepsilon$-Happy Edges}
+
+Let $F$ be a $b$-factor and $p$ a price function. By the Strong Duality theorem, if $F$ and $p$ are both primal and dual 
+optimal, respectively, then 
+\begin{align*}
+    \sum_{(i, j) \in F} \f[w]{i, j} &= \sum_{j \in R}  \f[b]{j} \f[p]{j} +  \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+    \sum_{(i, j) \in F} \f[w]{i, j} - \f[p]{j} &= \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+    \sum_{(i, j) \in F} \f[w^\prime]{i, j} &= \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}
+\end{align*}
+which implies that
+\begin{equation}
+    \f[w^\prime]{i, j} =  \min_{k \in N(i)} \f[w^\prime]{i, k} \quad \quad \forall \lrp{i, j} \in F. 
+    \label{eq:happy-edge}
+\end{equation}
+For any feasible $b$-factor $F$ and price function $p$, we call an edge in $F$ that satisfies \cref{eq:happy-edge} \emph{happy}. 
+
+A relaxation of the concept of happy edges are $\varepsilon$-happy edges which allow persons to be assigned to objects 
+within $\varepsilon$ of attaining the minimum reduced cost. That is,
+\begin{equation}
+    \f[w^\prime]{i, j} \leq \min_{k \in N(i)} \f[w^\prime]{i, k} + \varepsilon \quad \quad \forall \lrp{i, j} \in F
+    \label{eq:epsilon-happy-edge}
+\end{equation}
+with $\varepsilon$ being some non-negative constant. We can use the concept of $\varepsilon$-happy edges to get within 
+an additive loss of the optimal min cost $b$-factor. 
+
+\begin{theorem}
+    Let $F$ be some feasible $b$-factor and $p$ a price function such that $F$ consists of $\varepsilon$-happy edges. Then 
+    \begin{equation*}
+        \f[w]{F^{\ast}} \leq \f[w]{F} \leq \f[w]{F^{\ast}} + \varepsilon U
+    \end{equation*}
+    where $F^{\ast}$ is an optimal $b$-factor and $U = \frac{1}{2} \f[b]{V}$. 
+    \label{thm:additve_loss}
+\end{theorem}
+\begin{proof}
+    By weak duality, 
+    \begin{align*}
+        \f[w]{F^{\ast}} &\geq \sum_{j \in R}  \f[b]{j} \f[p]{j} +  \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+        &= \sum_{(i, j) \in F} \lrp{\f[p]{j} + \min_{k \in N(i)} \f[w^\prime]{i, k}} \\
+        &\geq  \sum_{(i, j) \in F} \lrp{\f[w]{i, j} - \varepsilon} = \f[w]{F} - \varepsilon U \geq \f[w]{F^{\ast}} - \varepsilon U
+    \end{align*}
+\end{proof}
