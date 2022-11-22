@@ -1,0 +1,196 @@
+\section{An Auction Based Approach}
+
+Recall that the LP-Relaxation of the \minbfactor{} problem in a bipartite graph $G = \lrp{L \cup R, E}$  is given by
+\begin{mini}
+    {}{\sum_{(i, j) \in E} \f[w]{i, j} \f[x]{i, j}}{}{\label{lp:primal_verbose}}{}
+    \addConstraint{\sum_{j \in N(i)} \f[x]{i, j}}{= \f[b]{i}}{\quad \forall i \in L}
+    \addConstraint{\sum_{i \in N(j)} \f[x]{i, j}}{= \f[b]{j}}{\quad \forall j \in R}
+    \addConstraint{0 \leq \f[x]{i, j}}{\leq 1}{\quad \forall \lrp{i,j} \in E}
+\end{mini}
+and its dual by
+\begin{maxi}
+    {}{\sum_{i \in L} \f[b]{i} \f[r]{i} + \sum_{j \in R} \f[b]{j} \f[p]{j} - \sum_{(i,j) \in E} \f[z]{i, j}}{}{\label{lp:dual_verbose}}{}
+    \addConstraint{\f[r]{i} + \f[p]{j} - \f[z]{i, j}}{\leq \f[w]{i, j}}{\quad \forall \lrp{i, j} \in E}
+    \addConstraint{\f[z]{i, j}}{ \geq 0}{\quad \forall \lrp{i,j} \in E}. 
+\end{maxi}
+For exposition purposes, we refer to vertices in $L$ as \emph{bidders}, and vertices in $R$ as \emph{objects}. 
+
+By complementary slackness conditions (\cref{lem:comp_slack}), we find that we do not have to maintain the edge duals $z$
+as their optimal value can be given explicitly by $\f[z]{i, j} = \max \lrc{\f[r]{i} + \f[p]{j} - \f[w]{i, j}, 0}$.
+This further implies that for all $\lrp{i, j} \in E$, $\f[r]{i} + \f[p]{j} \leq \f[w]{i, j}$. To condense notation, we define $\f[w^\prime]{i, j} = \f[w]{i, j} - \f[p]{j}$ as the \emph{augmented cost} 
+of object $j$ for bidder $i$. This gives us that the dual can be equivalently described by 
+\begin{maxi}
+    {}{\sum_{i \in L} \f[b]{i} \f[r]{i} + \sum_{j \in R} \f[b]{j} \f[p]{j} - \sum_{(i,j) \in E} \max \lrc{\f[r]{i} - \f[w^\prime]{i, j}, 0}}{}{\label{lp:dual_verbose_alt}}{}
+    \addConstraint{\f[r]{i} + \f[p]{j}}{\leq \f[w]{i, j}}{\quad \forall \lrp{i, j} \in E}.
+\end{maxi}
+
+If we are given a price function $p$, then the objective value of \cref{lp:dual_verbose_alt} is maximized when $\f[r]{i} = \min_{k \in N(i)} \f[w^\prime]{i, k}$ while still
+respecting the constraints of the problem. Since the edge duals $z$ depend on $r$, they can be given explicitly by $\f[z]{i, j} = \max \lrc{\min_{k \in N(i)}\f[w^\prime]{i, k} - \f[w^\prime]{i, j}, 0}$. 
+However, since clearly $\min_{k \in N(i)}\f[w^\prime]{i, k} \leq \f[w^\prime]{i, j}$, all the edge duals are given by $\f[z]{i, j} = 0$. 
+Hence, the dual problem can be further equivalently described by 
+\begin{maxi}
+    {p}{\sum_{j \in R} \f[b]{j} \f[p]{j} + \sum_{i \in L} \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}}{}{\label{lp:dual_price}}{}
+\end{maxi}
+
+\subsection{$\varepsilon$-Happiness}
+
+\begin{comment}
+By complementary slackness conditions in \cref{lp:dual_price}, if $\f[x]{i, j} > 0$ in an optimal primal solution, then 
+\begin{equation}
+    \f[w]{i, j} - \f[p^{\ast}]{j} = \f[r^{\ast}]{i}
+    \label{eq:comp-slack-alt}
+\end{equation}
+where $p^{\ast}$ and $r^{\ast}$ are optimal dual solutions. If we are given the optimal price 
+function, however, then \cref{eq:comp-slack-alt} is equivalent to
+\begin{equation}
+    \f[w^\prime]{i, j} = \min_{k \in N(i)} \f[w^\prime]{i, k}
+    \label{eq:happy-edge}
+\end{equation} 
+as $r^{\ast}$ is given as in the previous section. 
+\end{comment}
+
+Let $F^{\ast}$ be an optimal $b$-factor and $p^{\ast}$ an optimal price function. Consider the incidence function $x$ induced by $F^{\ast}$. 
+By complementary slackness conditions in \cref{lp:dual_price}, this implies that if $\f[x]{i, j} > 0$,
+\begin{equation}
+    \begin{aligned}
+        \f[w]{i, j} - \f[p^{\ast}]{j} &= \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+        \f[w^\prime]{i, j} &= \min_{k \in N(i)} \f[w^\prime]{i, k}. 
+    \end{aligned}
+    \label{eq:happy-edge} 
+\end{equation}
+\begin{comment}
+Since these are primal and dual optimal, respectively, by strong duality
+\begin{align*}
+    \sum_{(i, j) \in F^{\ast}} \f[w]{i, j} &= \sum_{j \in R}  \f[b]{j} \f[p^{\ast}]{j} +  \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+    \sum_{(i, j) \in F^{\ast}} \f[w]{i, j} - \f[p^{\ast}]{j} &= \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+    \sum_{(i, j) \in F^{\ast}} \f[w^\prime]{i, j} &= \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}
+\end{align*}
+which implies that for all $\lrp{i, j} \in F^{\ast}$,
+\begin{equation}
+    \f[w^\prime]{i, j} =  \min_{k \in N(i)} \f[w^\prime]{i, k}. 
+    \label{eq:happy-edge}
+\end{equation}
+\end{comment}
+For any feasible simple $b$-matching (not necessarily a $b$-factor) $F$ and price function $p$, we call an edge in $F$ that satisfies \cref{eq:happy-edge} \emph{happy} with respect to $p$. 
+We can relax this condition to consider bidders assigned to objects within $\varepsilon$ of attaining the minimum augmented cost, where $\varepsilon \geq 0$. That is,
+\begin{equation}
+    \f[w^\prime]{i, j} \leq \min_{k \in N(i)} \f[w^\prime]{i, k} + \varepsilon. 
+    \label{eq:epsilon-happy-edge}
+\end{equation}
+If an edge in $F$ satisfies \cref{eq:epsilon-happy-edge}, then it is called \emph{$\varepsilon$-happy} with respect to $p$. 
+If $F$ consists of only $\varepsilon$-happy (resp.\! happy) edges, then it is also $\varepsilon$-happy (resp.\! happy) with respect to $p$. If $F$ is a $b$-factor and is happy, then it must be optimal by \cref{eq:happy-edge}. 
+However, if it is a $b$-factor and $\varepsilon$-happy, then its weight falls within an additive loss of the optimal min weight $b$-factor.  
+%Similarly, a $b$-factor $F$ that consists of only $\varepsilon$-happy edges is called $\varepsilon$-happy. 
+%If a $b$-factor is $\varepsilon$-happy, then its weight falls within an additive loss of the optimal min weight $b$-factor. 
+
+\begin{lemma}
+    Let $F, p$ be some feasible $b$-factor and price function, respectively, such that $F$ is $\varepsilon$-happy with respect to $p$. Then 
+    \begin{equation*}
+        \f[w]{F^{\ast}} \leq \f[w]{F} \leq \f[w]{F^{\ast}} + \varepsilon U
+    \end{equation*}
+    where $F^{\ast}$ is an optimal $b$-factor and $U = \frac{1}{2} \f[b]{V} = \abs{F}$. 
+    \label{lem:additve_loss}
+\end{lemma}
+\begin{proof}
+    Since $F$ is $\varepsilon$-happy, each edge $\lrp{i, j} \in F$ satisfies \cref{eq:epsilon-happy-edge}, which implies that 
+    \begin{equation*}
+        \min_{k \in N(i)} \f[w^\prime]{i, k} \geq \f[w]{i, j} - \f[p]{j} - \varepsilon. 
+    \end{equation*}
+    Additionally, by definition of a $b$-factor, 
+    \begin{equation*}
+        \sum_{j \in R}  \f[b]{j} \f[p]{j} +  \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k} = \sum_{(i, j) \in F} \lrp{\f[p]{j} + \min_{k \in N(i)} \f[w^\prime]{i, k}}
+    \end{equation*}
+    since each vertex $v \in L \cup R$ is matched exactly $\f[b]{v}$ times in $F$. 
+    Hence, by weak duality, 
+    \begin{align*}
+        \f[w]{F^{\ast}} &\geq \sum_{j \in R}  \f[b]{j} \f[p]{j} +  \sum_{i \in L}  \f[b]{i} \min_{k \in N(i)} \f[w^\prime]{i, k}\\
+        &= \sum_{(i, j) \in F} \lrp{\f[p]{j} + \min_{k \in N(i)} \f[w^\prime]{i, k}} \\
+        \f[w]{F^{\ast}} &\geq  \sum_{(i, j) \in F} \lrp{\f[w]{i, j} - \varepsilon} = \f[w]{F} - \varepsilon U \geq \f[w]{F^{\ast}} - \varepsilon U. 
+    \end{align*}
+    Adding $\varepsilon U$ to the last line gives $\f[w]{F^{\ast}} + \varepsilon U \geq \f[w]{F} \geq \f[w]{F^{\ast}}$.
+\end{proof}
+
+\subsection{The Auction Algorithm}
+
+The auction algorithm uses the alternative expression of the dual problem \cref{lp:dual_price} to find a $b$-factor by iteratively constructing a 
+feasible price function $p$. In each iteration, an unsaturated bidder $u$ finds the objects $v_1, v_2$ that give it the lowest and second-lowest augmented cost, respectively, 
+with the intention of bidding on the lowest cost object. The bid is calculated by simply taking the difference in the augmented costs of the two objects, plus some additional $\varepsilon$ value.
+The price of object $v_1$ is then lowered by the bid, and $u$ is matched to $v_1$. If $v_1$ is already saturated in $F$ before adding the edge $\lrp{u, v_1}$, then a random 
+edge in $F$ containing $v_1$ is removed and replaced with $\lrp{u, v_1}$. This process continues as long as there are unsaturated bidders, and if it 
+terminates, it must necessarily return a feasible $b$-factor. 
+
+\begin{algorithm}[!h]
+    \caption{Sequential Auction} \label{alg:auction}
+    \begin{algorithmic}[1]
+        \AlgIn A bipartite graph $G = \lrp{V = L \cup R, E}$, edge weight function $w \colon E \to \R_{\geq 0}$, node capacity function $b \colon V \to \Z_+$, $\varepsilon \geq 0$, and prices $p\colon V \to \R$
+        \AlgOut A $b$-factor $F$ and price function $p$ such that $F$ is $\varepsilon$-happy with respect to $p$
+
+        \State $U \gets L$ \Comment{Unsaturated nodes}
+        \State $F \gets \emptyset$
+        \While{$U \neq \emptyset$}
+            \State Choose any $u \in U$
+            \State $\Call{Bid}{u, p, U, F}$
+        \EndWhile
+        \State \Return $\lrp{F, p}$
+        \State
+        \Procedure{Bid}{$u$, $p$, $U$, $F$}
+            \State $v_1 \gets \argmin_{v \in N(u)} \f[w^\prime]{u, v}$ \Comment{Lowest augmented cost object}
+            \State $v_2 \gets \argmin_{v \in N(u) \sm \lrc{v_1} } \f[w^\prime]{u, v}$ \Comment{Second lowest augmented cost object}
+            \State $\gamma \gets \f[w^\prime]{u, v_2} - \f[w^\prime]{u, v_1} + \varepsilon$ \Comment{Bid}
+            \State $\f[p]{v_1} \gets \f[p]{v_1} - \gamma$ % \Comment{Price update}
+            \If{$\abs{\lrc{e \in F \colon v_1 \in e}} = \f[b]{v_1}$} \Comment{$v_1$ is saturated}
+                \State Choose $y$ randomly from the set of bidders $v_1$ is matched to
+                \State $F \gets F \sm \lrc{\lrp{y, v_1}} \cup \lrc{\lrp{u, v_1}}$ \Comment{Remove previous edge and insert new one}
+                \State $U \gets U \cup \lrc{y}$   
+            \Else 
+                \State $F \gets F \cup \lrc{\lrp{u, v_1}}$
+            \EndIf
+            \If{$\abs{\lrc{e \in F \colon u \in e}} = \f[b]{u}$} \Comment{$u$ is saturated}
+                \State $U \gets U \sm \lrc{u}$  
+            \EndIf 
+        \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{observation}
+    In each iteration of \cref{alg:auction}, only one object has a price update. The price of this object decreases by at least $\varepsilon$. 
+    \label{obs:price-update}
+\end{observation}
+
+The choice of the bidding value $\gamma = \f[w^\prime]{u, v_2} - \f[w^\prime]{u, v_1} + \varepsilon$ for an unsaturated bidder $u$
+is made to maintain a simple $b$-matching that is $\varepsilon$-happy with respect to the price function $p$ in each iteration. 
+
+\begin{lemma}
+    %At the start of any iteration of \cref{alg:auction}, $F$ is $\varepsilon$-happy with respect to the price function at that iteration. 
+    If at the start of an iteration of \cref{alg:auction} $F$ is $\varepsilon$-happy with respect to the price function $p$, the updated 
+    matching is still $\varepsilon$-happy with respect to the updated price function at the end of the iteration. 
+    \label{lem:F-eps-happy}
+\end{lemma}
+\begin{proof}
+    Suppose that in this iteration, bidder $i$ finds objects $j$ and $\overline{j}$ that have the lowest and second-lowest augmented cost, respectively, 
+    and makes a bid on object $j$. 
+    Let $p$ and $p^\prime$ be the price function before and after the bid, respectively. Since the bid 
+    $\gamma = \f[w^\prime]{i, \overline{j}} - \f[w^\prime]{i, j} + \varepsilon$, we get that 
+    \begin{align*}
+        \f[p^\prime]{j} = \f[p]{j} - \lrp{\f[w^\prime]{i, \overline{j}} - \f[w^\prime]{i, j} + \varepsilon}
+        %&= \f[p]{j} + \f[w^\prime]{i, j} - \f[w^\prime]{i, \overline{j}} - \varepsilon\\
+        = \f[w]{i, j} - \f[w^\prime]{i, \overline{j}} - \varepsilon
+    \end{align*}
+    and hence 
+    \begin{align*}
+        \f[w]{i, j} - \f[p^\prime]{j} &= \f[w^\prime]{i, \overline{j}} + \varepsilon
+        = \min_{k \in N(i) \sm \lrc{j}} \lrp{\f[w]{i, k} - \f[p]{k}} + \varepsilon.
+    \end{align*}
+    By \cref{obs:price-update}, we find that for all $r \in R$, $\f[p^\prime]{r} \leq \f[p]{r}$ with equality for all objects besides $j$. 
+    Hence, 
+    \begin{align*}
+        \f[w]{i, j} - \f[p^\prime]{j} = \min_{k \in N(i) \sm \lrc{j}} \lrp{\f[w]{i, k} - \f[p]{k}} + \varepsilon \leq \min_{k \in N(i)} \lrp{\f[w]{i, k} + \f[p^\prime]{k}} + \varepsilon
+    \end{align*}
+    so the edge $\lrp{i, j}$ is $\varepsilon$-happy with respect to $p^\prime$.  
+    Additionally, for each edge $\lrp{a, b}$ in $F$ where $b \neq j$, we find that 
+    \begin{equation*}
+        \f[w]{a, b} - \f[p^\prime]{b} = \f[w]{a, b} - \f[p]{b} \leq \min_{c \in N(a)} \lrp{\f[w]{a, c} - \f[p]{c}} + \varepsilon \leq \min_{c \in N(a)} \lrp{\f[w]{a, c} - \f[p^\prime]{c}} + \varepsilon.
+    \end{equation*}
+    Thus, $F$ is also $\varepsilon$-happy with respect to $p^\prime$.
+    Therefore, the updated matching $F^\prime = F \cup \lrc{\lrp{i, j}}$ (plus any additional removals if $j$ is already saturated) is $\varepsilon$-happy with respect to $p^\prime$. 
+\end{proof}
